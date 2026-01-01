@@ -20,7 +20,7 @@ public class SudokuBoard {
 	public int[][] getSolution() {
 		int[][] copy = Arrays.stream(this.matriz).map(int[]::clone).toArray(int[][]::new);
 		
-		int[][] sol = this.backtracking(copy, 0, this.matriz.length - 1);
+		int[][] sol = this.backtracking(copy, 0, this.matriz.length - 1).get();
 		
 		
 		int[][] copy2 = {
@@ -94,7 +94,7 @@ public class SudokuBoard {
 		
 		throw new UnsupportedOperationException("Method 'myUnimplementedMethod' has not been implemented yet.");
 		/*if (containsRepeatedElementVertically(matriz)) {
-			throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsInEachSubsquare());
+			throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsVerticaly());
 		}*/
 	}
 	
@@ -114,6 +114,14 @@ public class SudokuBoard {
 				}
 			}
 		}
+	}
+
+	private static void shouldNotContainRepeatedElementHorizontaly (int[][] matriz) {
+		
+		throw new UnsupportedOperationException("Method 'myUnimplementedMethod' has not been implemented yet.");
+		/*if (containsRepeatedElementHorizontaly(matriz)) {
+			throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsHorizontaly());
+		}*/
 	}
 	
 	private static void containsRepeatedElementHorizontaly(int[][] matriz) {
