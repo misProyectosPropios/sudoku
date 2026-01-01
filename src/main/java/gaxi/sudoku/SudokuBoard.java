@@ -1,6 +1,8 @@
 package gaxi.sudoku;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class SudokuBoard {
 
@@ -16,13 +18,46 @@ public class SudokuBoard {
 	}
 	
 	public int[][] getSolution() {
-		int[][] matrizSolucion = {
+		int[][] copy = Arrays.stream(this.matriz).map(int[]::clone).toArray(int[][]::new);
+		
+		int[][] sol = this.backtracking(copy, 0, this.matriz.length - 1);
+		
+		
+		int[][] copy2 = {
 	            {1, 2, 3, 4},
 	            {3, 4, 1, 2},
 	            {2, 1, 4, 3},
 	            {4, 3, 2, 1}
 	        };
-		return matrizSolucion;
+		return copy2;
+	}
+	
+	private Optional<int[][]> backtracking(int[][] currentSolution, int x, int y) {
+		if (y > this.matriz.length) {
+			return Optional.ofNullable(currentSolution);
+		}
+		
+		for(int i = 0; i < this.matriz.length; i++) {
+			
+			int posY = y;
+			if (x == this.matriz.length - 1) {
+				posY++;
+			}
+			int posX = x + 1 % this.matriz.length;
+			
+			currentSolution[x][y] = i;
+			
+			
+			backtracking(currentSolution, posX, posY);
+		}
+		
+		//Si llegamos hasta acá significa que no encontramos ninguna solución. Se va a devolver varias veces, pero 
+		// solamente se devolverá como resultado si no se encontró otra
+		return Optional.empty();
+	}
+	
+	private boolean isParcialCorrectSolution() {
+		throw new UnsupportedOperationException("TODO");
 	}
 	
 	
@@ -53,6 +88,14 @@ public class SudokuBoard {
 		}
 		
 		return true;
+	}
+	
+	private static void shouldNotContainRepeatedElementVertically (int[][] matriz) {
+		
+		throw new UnsupportedOperationException("Method 'myUnimplementedMethod' has not been implemented yet.");
+		/*if (containsRepeatedElementVertically(matriz)) {
+			throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsInEachSubsquare());
+		}*/
 	}
 	
 	private static void containsRepeatedElementVertically (int[][] matriz) {
@@ -162,3 +205,5 @@ public class SudokuBoard {
 	
 	
 }
+
+
