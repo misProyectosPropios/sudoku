@@ -92,43 +92,6 @@ public class SudokuBoard {
 	
 	}
 
-	/*
-	 * 
-bool seRepitenNumerosEnCuadrados(struct sudoku* sudokuResolviendo) {
-    for(int i = 0; i < sudoku_size; i++) {
-        if(hayNumerosRepetidosEnCuadradoN(sudokuResolviendo, i)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool hayNumerosRepetidosEnCuadradoN(struct sudoku* sudokuResolviendo, int cuadradoAVerificar) {
-    int x, y;
-    x = (cuadradoAVerificar / 3) * 3;
-    y = (cuadradoAVerificar % 3);
-    
-    bool apareceValorAntes[] = {false, false, false, false, false, 
-                                false, false, false, false, false};
-
-    for(int i = 0; i < sudoku_square_size; i++) {
-        for(int j = 0; j < sudoku_square_size; j++) {
-            int valorCelda = sudokuResolviendo->matriz[x + i][y + j];
-            if (valorCelda == sudoku_empty_cell - 1) {
-                continue;
-            } else if(apareceValorAntes[valorCelda]) {
-                return true;
-            } else {
-                apareceValorAntes[valorCelda] = true;
-            }
-        }
-    }
-    
-    return false;
-}
-	 * */
-	
-	
 	
 	private static void shouldNotContainsRepeatedElementInEachSquare(int[][] matriz) {
 		if (containsRepeatedElementInEachSquare(matriz)) {
