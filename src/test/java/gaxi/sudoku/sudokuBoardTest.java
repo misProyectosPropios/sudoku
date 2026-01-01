@@ -138,4 +138,29 @@ public class sudokuBoardTest {
 		assertArrayEquals(matrizSolucion, solutionGot);
 	}
 	
+	@Test
+	void getSolutionHaceBacktrackingHaciaLaDerecha() {
+		int[][] matrizConUnVariosValoresAlFinalPorRecorrer = {
+	            {4, 3, 2, 1},
+	            {2, 1, 3, 4},
+	            {3, 4, 1, 2},
+	            {0, 0, 0, 0}
+	        };
+		
+		SudokuBoard board = new SudokuBoard(matrizConUnVariosValoresAlFinalPorRecorrer);
+		
+		
+		int[][] solutionGot = board.getSolution();
+		
+		int[][] matrizSolucion = {
+				{4, 3, 2, 1},
+	            {2, 1, 3, 4},
+	            {3, 4, 1, 2},
+	            {1, 2, 4, 3}
+	        };
+		
+		assertArrayEquals(matrizSolucion, solutionGot);
+		
+	}
+	
 }
