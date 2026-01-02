@@ -1,6 +1,9 @@
 package gaxi.sudoku;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Optional;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -126,7 +129,7 @@ public class sudokuBoardTest {
 		SudokuBoard board = new SudokuBoard(matrizConUnValorPorRecorrerFinal);
 
 		
-		int[][] solutionGot = board.getSolution();
+		int[][] solutionGot = board.getSolution().get();
 		
 		int[][] matrizSolucion = {
 	            {1, 2, 3, 4},
@@ -150,7 +153,7 @@ public class sudokuBoardTest {
 		SudokuBoard board = new SudokuBoard(matrizConUnVariosValoresAlFinalPorRecorrer);
 		
 		
-		int[][] solutionGot = board.getSolution();
+		int[][] solutionGot = board.getSolution().get();
 		
 		int[][] matrizSolucion = {
 				{4, 3, 2, 1},
@@ -160,6 +163,23 @@ public class sudokuBoardTest {
 	        };
 		
 		assertArrayEquals(matrizSolucion, solutionGot);
+		
+	}
+	
+	@Test
+	void imposibleSudokuReturns() {
+		int[][] matrizImposible = {
+			    {1, 2, 0, 0},
+			    {0, 0, 1, 2},
+			    {0, 0, 0, 0},
+			    {0, 0, 0, 0}
+			};
+		
+		SudokuBoard board = new SudokuBoard(matrizImposible);
+		Optional<int[][]> solutionGot = board.getSolution();
+		
+		assertTrue(!solutionGot.isPresent());
+		
 		
 	}
 	
