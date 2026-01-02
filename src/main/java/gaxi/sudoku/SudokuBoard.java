@@ -21,17 +21,7 @@ public class SudokuBoard {
 		int[][] copy = Arrays.stream(this.matriz).map(int[]::clone).toArray(int[][]::new);
 		
 		int[][] sol = this.backtracking(copy, 0, this.matriz.length - 1).get();
-		sol[0][0] = -1;
-		
-		sol[1][0] = -1;
-		
-		int[][] copy2 = {
-	            {1, 2, 3, 4},
-	            {3, 4, 1, 2},
-	            {2, 1, 4, 3},
-	            {4, 3, 2, 1}
-	        };
-		return copy2;
+		return sol;
 	}
 	
 	private Optional<int[][]> backtracking(int[][] currentSolution, int row, int col) {
@@ -39,12 +29,12 @@ public class SudokuBoard {
 			return Optional.ofNullable(currentSolution);
 		}
 		int nextRow = (col == this.matriz.length - 1) ? (row + 1) % this.matriz.length : 0;
-	    int nextCol = (nextRow == 0) ? col : col + 1;
+	    int nextCol = (nextRow == 0) ? col + 1 : col;
 	    
 		for(int val = 1; val <= this.matriz.length; val++) {
-			currentSolution[row][col] = val;
+			currentSolution[col][row] = val;
 			
-			if (!this.isParcialCorrectSolution()) {
+			if (!this.isParcialCorrectSolution(currentSolution)) {
 				continue;
 			}
 			Optional<int[][]> result = backtracking(currentSolution, nextRow, nextCol);
@@ -54,15 +44,14 @@ public class SudokuBoard {
 			}
 		}
 		
-		//Si llegamos hasta acá significa que no encontramos ninguna solución. Se va a devolver varias veces, pero 
-		// solamente se devolverá como resultado si no se encontró otra
+		currentSolution[row][col] = this.matriz[row][col];
 		return Optional.empty();
 	}
 	
-	private boolean isParcialCorrectSolution() {
-		return !SudokuBoard.containsRepeatedElementHorizontaly(this.matriz) && 
-				!SudokuBoard.containsRepeatedElementHorizontaly(this.matriz) &&
-				!SudokuBoard.containsRepeatedElementInEachSquare(this.matriz);
+	private boolean isParcialCorrectSolution(int[][] posibleCorrectBoard) {
+		return !SudokuBoard.containsRepeatedElementVertically(posibleCorrectBoard) && 
+				!SudokuBoard.containsRepeatedElementHorizontaly(posibleCorrectBoard) &&
+				!SudokuBoard.containsRepeatedElementInEachSquare(posibleCorrectBoard);
 		
 	}
 	
