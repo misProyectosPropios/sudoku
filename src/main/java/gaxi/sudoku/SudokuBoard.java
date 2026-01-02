@@ -17,16 +17,18 @@ public class SudokuBoard {
 		this.matriz = matriz;
 	}
 	
-	public int[][] getSolution() {
+	public Optional<int[][]> getSolution() {
 		int[][] copy = Arrays.stream(this.matriz).map(int[]::clone).toArray(int[][]::new);
-		
-		int[][] sol = this.backtracking(copy, 0, this.matriz.length - 1).get();
-		return sol;
+		Optional<int[][]> backtrackingResult = this.backtracking(copy, 0, 0);
+		return backtrackingResult;
 	}
 	
 	private Optional<int[][]> backtracking(int[][] currentSolution, int row, int col) {
 		if (col >= this.matriz.length) {
-			return Optional.ofNullable(currentSolution);
+			if (isCompleteCorrectSolution(currentSolution)) {
+				return Optional.ofNullable(currentSolution);
+			}
+			return Optional.empty();
 		}
 		int nextRow = (col == this.matriz.length - 1) ? (row + 1) % this.matriz.length : 0;
 	    int nextCol = (nextRow == 0) ? col + 1 : col;
@@ -52,6 +54,23 @@ public class SudokuBoard {
 		return !SudokuBoard.containsRepeatedElementVertically(posibleCorrectBoard) && 
 				!SudokuBoard.containsRepeatedElementHorizontaly(posibleCorrectBoard) &&
 				!SudokuBoard.containsRepeatedElementInEachSquare(posibleCorrectBoard);
+		
+	}
+	
+	private boolean isThereAnyWhiteSpace(int[][] board) {
+		for(int i = 0; i < board.length; i++) {
+			for(int j = 0; j < board.length; j++) {
+				if (board[i][j] == 0) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private boolean isCompleteCorrectSolution(int[][] posibleSolution) {
+		return isParcialCorrectSolution(posibleSolution) && 
+				!isThereAnyWhiteSpace(posibleSolution);
 		
 	}
 	
