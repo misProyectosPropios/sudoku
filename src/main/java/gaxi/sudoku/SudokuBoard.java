@@ -21,7 +21,9 @@ public class SudokuBoard {
 		int[][] copy = Arrays.stream(this.matriz).map(int[]::clone).toArray(int[][]::new);
 		
 		int[][] sol = this.backtracking(copy, 0, this.matriz.length - 1).get();
+		sol[0][0] = -1;
 		
+		sol[1][0] = -1;
 		
 		int[][] copy2 = {
 	            {1, 2, 3, 4},
@@ -32,23 +34,24 @@ public class SudokuBoard {
 		return copy2;
 	}
 	
-	private Optional<int[][]> backtracking(int[][] currentSolution, int x, int y) {
-		if (y > this.matriz.length) {
+	private Optional<int[][]> backtracking(int[][] currentSolution, int row, int col) {
+		if (col >= this.matriz.length) {
 			return Optional.ofNullable(currentSolution);
 		}
-		
-		for(int i = 0; i < this.matriz.length; i++) {
+		int nextRow = (col == this.matriz.length - 1) ? (row + 1) % this.matriz.length : 0;
+	    int nextCol = (nextRow == 0) ? col : col + 1;
+	    
+		for(int val = 1; val <= this.matriz.length; val++) {
+			currentSolution[row][col] = val;
 			
-			int posY = y;
-			if (x == this.matriz.length - 1) {
-				posY++;
+			if (!this.isParcialCorrectSolution()) {
+				continue;
 			}
-			int posX = x + 1 % this.matriz.length;
+			Optional<int[][]> result = backtracking(currentSolution, nextRow, nextCol);
 			
-			currentSolution[x][y] = i;
-			
-			
-			backtracking(currentSolution, posX, posY);
+			if (result.isPresent()) {
+				return result;
+			}
 		}
 		
 		//Si llegamos hasta acá significa que no encontramos ninguna solución. Se va a devolver varias veces, pero 
@@ -57,14 +60,17 @@ public class SudokuBoard {
 	}
 	
 	private boolean isParcialCorrectSolution() {
-		throw new UnsupportedOperationException("TODO");
+		return !SudokuBoard.containsRepeatedElementHorizontaly(this.matriz) && 
+				!SudokuBoard.containsRepeatedElementHorizontaly(this.matriz) &&
+				!SudokuBoard.containsRepeatedElementInEachSquare(this.matriz);
+		
 	}
 	
 	
 	
 	private static boolean shouldNotContainRepeatedElements(int[][] matriz) { 
-		SudokuBoard.containsRepeatedElementHorizontaly(matriz);
-		SudokuBoard.containsRepeatedElementVertically(matriz);
+		SudokuBoard.shouldNotContainRepeatedElementHorizontaly(matriz);
+		SudokuBoard.shouldNotContainRepeatedElementVertically(matriz);
 		SudokuBoard.shouldNotContainsRepeatedElementInEachSquare(matriz);
 		return true;
 	}
@@ -91,14 +97,14 @@ public class SudokuBoard {
 	}
 	
 	private static void shouldNotContainRepeatedElementVertically (int[][] matriz) {
-		
-		throw new UnsupportedOperationException("Method 'myUnimplementedMethod' has not been implemented yet.");
-		/*if (containsRepeatedElementVertically(matriz)) {
+		if (containsRepeatedElementVertically(matriz)) {
 			throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsVerticaly());
-		}*/
+		}
 	}
 	
-	private static void containsRepeatedElementVertically (int[][] matriz) {
+	
+	
+	private static boolean containsRepeatedElementVertically (int[][] matriz) {
 		
 		for(int col = 0; col < matriz.length; col++) {
 			HashSet<Integer> elementosEnColumna = new HashSet<>();
@@ -108,23 +114,24 @@ public class SudokuBoard {
 					continue;
 				} 
 				if (elementosEnColumna.contains(valueAtPos)) {
-					throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsVerticaly());
+					return true;
 				} else {
 					elementosEnColumna.add(valueAtPos);
 				}
 			}
 		}
+		return false;
 	}
 
 	private static void shouldNotContainRepeatedElementHorizontaly (int[][] matriz) {
 		
-		throw new UnsupportedOperationException("Method 'myUnimplementedMethod' has not been implemented yet.");
-		/*if (containsRepeatedElementHorizontaly(matriz)) {
+		
+		if (containsRepeatedElementHorizontaly(matriz)) {
 			throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsHorizontaly());
-		}*/
+		}
 	}
 	
-	private static void containsRepeatedElementHorizontaly(int[][] matriz) {
+	private static boolean containsRepeatedElementHorizontaly(int[][] matriz) {
 		
 		for(int row = 0; row < matriz.length; row++) {
 			HashSet<Integer> elementosEnFila = new HashSet<>();
@@ -134,13 +141,13 @@ public class SudokuBoard {
 					continue;
 				} 
 				if (elementosEnFila.contains(valueAtPos)) {
-					throw new IllegalArgumentException(descriptionErrorShouldNotHaveRepeatedElementsHorizontaly());
+					return true;
 				} else {
 					elementosEnFila.add(valueAtPos);
 				}
 			}
 		}
-	
+		return false;
 	}
 
 	
@@ -164,7 +171,7 @@ public class SudokuBoard {
 		int x, y;
 		int squareSize = (int) Math.sqrt( (double) matriz.length);
 		x = (cuadradoAVerificar * squareSize) % matriz.length;
-	    y = (cuadradoAVerificar / squareSize);
+	    y = (cuadradoAVerificar / squareSize) * squareSize;
 	    
 	    HashSet<Integer> apariciones = new HashSet<>();
 	    
