@@ -7,6 +7,7 @@ import java.util.Optional;
 public class SudokuBoard {
 
 	private int[][] matriz;
+	private int[][] matrizOriginal;
 	
 	public SudokuBoard(int[][] matriz) {
 		SudokuBoard.shouldHaveAtLeastOneElement(matriz);
@@ -15,6 +16,20 @@ public class SudokuBoard {
 		SudokuBoard.shouldNotContainRepeatedElements(matriz);
 		
 		this.matriz = matriz;
+		this.matrizOriginal = Arrays.stream(matriz).map(int[]::clone).toArray(int[][]::new);
+	}
+	
+	public int valorMatrizOriginal(int row, int col) {
+		return this.matrizOriginal[row][col];
+	}
+	
+	public void printBoard() {
+		for(int i = 0; i < this.matriz.length; i++) {
+			for(int j = 0; j < this.matriz.length; j++) {
+				System.out.print(this.matriz[i][j] + " ");
+			}
+			System.out.println();
+		}
 	}
 	
 	public Optional<int[][]> getSolution() {
@@ -35,7 +50,9 @@ public class SudokuBoard {
 		int nextRow = (col == this.matriz.length - 1) ? row + 1 : row;
 		//int nextRow = (col == this.matriz.length - 1) ? (row + 1) % this.matriz.length : 0;
 	    //int nextCol = (nextRow == 0) ? col + 1 : col;
-	    
+	    if (this.matriz[row][col] != 0) {
+	    	return backtracking(currentSolution, nextRow, nextCol);
+	    }
 		for(int val = 1; val <= this.matriz.length; val++) {
 			currentSolution[row][col] = val;
 			
