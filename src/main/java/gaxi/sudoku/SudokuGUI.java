@@ -3,10 +3,8 @@ package gaxi.sudoku;
 import java.util.Optional;
 
 import javafx.application.Application;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.*;
@@ -15,6 +13,7 @@ import javafx.stage.Stage;
 public class SudokuGUI extends Application {
 
 	TextField[][] cells = new TextField[9][9];
+	SudokuBoard solver = new SudokuBoard(new int[9][9]);
 	
     @Override
     public void start(Stage stage) {
@@ -105,127 +104,110 @@ public class SudokuGUI extends Application {
             //Get the matrix
             //Call the solver 
             //Update the GUI with the solution
-			int[][] board = new int[9][9];
-			for (int y = 0; y < 9; y++) {
-				for (int x = 0; x < 9; x++) {
-					String text = cells[y][x].getText();
-					board[y][x] = text.isEmpty() ? 0 : Integer.parseInt(text);
-				}
-			}
-			SudokuBoard solver = new SudokuBoard(board);
+			int[][] board = getBoard();
+			solver = new SudokuBoard(board);
+			
+			//Debug option
+			solver.printBoard();
+			
 			Optional<int[][]> sol = solver.getSolution();
 			if (sol.isPresent()) {
-			
-				int[][] solution = sol.get();
-				for (int y = 0; y < 9; y++) {
-					for (int x = 0; x < 9; x++) {
-						cells[y][x].setText(String.valueOf(solution[y][x]));
-					}
-				}
+				writeSolutionToBoard(sol);
 			} else {
 				System.out.println("No solution found.");
-			}
-            
+			}  
         });
         
         btn2.setOnAction(event -> {
-            for (int y = 0; y < 9; y++) {
-                for (int x = 0; x < 9; x++) {
-                    cells[x][y].setText("");
-                }
-            }
+            writeMatrizOriginal();
         });
         
         return rightPanel;
     }
-    
 
-	private TextField createCell(int x, int y, boolean editable) {
+
+	private void writeMatrizOriginal() {
+		for (int y = 0; y < 9; y++) {
+		    for (int x = 0; x < 9; x++) {
+		        cells[x][y].setText(solver.valorMatrizOriginal(x, y) == 0 ? "" : String.valueOf(solver.valorMatrizOriginal(x, y)));;
+		    }
+		}
+	}
+
+
+	private void writeSolutionToBoard(Optional<int[][]> sol) {
+		int[][] solution = sol.get();
+		for (int y = 0; y < 9; y++) {
+			for (int x = 0; x < 9; x++) {
+				cells[y][x].setText(String.valueOf(solution[y][x]));
+			}
+		}
+	}
+
+
+	private int[][] getBoard() {
+		int[][] board = new int[9][9];
+		for (int y = 0; y < 9; y++) {
+			for (int x = 0; x < 9; x++) {
+				String text = cells[y][x].getText();
+				board[y][x] = text.isEmpty() ? 0 : Integer.parseInt(text);
+			}
+		}
+		return board;
+	}
+    
+    private TextField createCell(int x, int y, boolean editable) {
         TextField tf = new TextField();
 
-        // Fill cell
         tf.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-        // Center text
-        tf.setStyle(
-            "-fx-alignment: center;" +
-            "-fx-font-size: 18px;" +
-            "-fx-border-color: black;" +
-            "-fx-border-width: 1px;" + 
-            "-fx-caret-color: transparent;"
-        );
-        
+        tf.setStyle(getStyle(x, y, false));
 
         tf.focusedProperty().addListener((obs, oldVal, isFocused) -> {
-            if (isFocused) {
-     
-                tf.setStyle(
-                    "-fx-alignment: center;" +
-                    "-fx-font-size: 18px;" +
-                    "-fx-border-color: black;" +
-                    "-fx-border-width: 1px;" +
-                    "-fx-background-color: lightblue;" +
-                    "-fx-display-caret: false;;"
-                );
-                tf.deselect(); // remove selection
-            } else {
-                tf.setStyle(
-                    "-fx-alignment: center;" +
-                    "-fx-font-size: 18px;" +
-                    "-fx-border-color: black;" +
-                    "-fx-border-width: 1px;" +
-                    "-fx-background-color: white;" +
-                    "-fx-caret-color: transparent;"
-                );
-            }
+            tf.setStyle(getStyle(x, y, isFocused));
+            if (isFocused) tf.deselect();
         });
-        
-        // Editable or fixed (clue)
+
         tf.setEditable(editable);
 
         if (!editable) {
-            tf.setStyle(
-                "-fx-alignment: center;" +
-                "-fx-font-size: 18px;" +
-                "-fx-background-color: lightgray;" +
-                "-fx-border-color: black;" +
-                "-fx-border-width: 1px;"
-            );
+            tf.setStyle(getStyle(x, y, false) + "-fx-background-color: lightgray;");
         }
 
-        // Input restriction: only 1–9 and max length 1
+        // Input restriction
         tf.setTextFormatter(new TextFormatter<>(change -> {
             String newText = change.getControlNewText();
-
-            if (newText.matches("[1-9]?")) {
-                return change;
-            }
-
-            return null; // blocks the change completely
+            return newText.matches("[1-9]?") ? change : null;
         }));
-        
+
         tf.setOnKeyTyped(e -> {
             String key = e.getCharacter();
-            
-            // Handle digits 1–9
+
             if (key.matches("[1-9]")) {
                 tf.setText(key);
-                e.consume(); // <-- critical: prevents duplicate insertion
-            }
-            // Handle backspace
-            else if (key.equals("\b")) {
+                e.consume();
+            } else if (key.equals("\b")) {
                 tf.clear();
                 e.consume();
             }
         });
 
-
-        // Optional: debug
-        tf.setOnMouseClicked(e -> {
-            System.out.println("Clicked cell: (" + x + "," + y + ")");
-        });
-
         return tf;
     }
     
+    private String getStyle(int x, int y, boolean focused) {
+        int top = (y % 3 == 0) ? 3 : 1;
+        int left = (x % 3 == 0) ? 3 : 1;
+        int bottom = (y == 8) ? 3 : 1;
+        int right = (x == 8) ? 3 : 1;
+
+        String bg = focused ? "lightblue" : "white";
+
+        return "-fx-alignment: center;" +
+               "-fx-font-size: 18px;" +
+               "-fx-border-color: black;" +
+               "-fx-border-width: " + top + " " + right + " " + bottom + " " + left + ";" +
+               "-fx-background-color: " + bg + ";" +
+               "-fx-caret-color: transparent;";
+    }
 }
