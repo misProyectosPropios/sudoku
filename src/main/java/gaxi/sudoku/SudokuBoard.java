@@ -24,17 +24,20 @@ public class SudokuBoard {
 	}
 	
 	private Optional<int[][]> backtracking(int[][] currentSolution, int row, int col) {
-		if (col >= this.matriz.length) {
+		if (row >= this.matriz.length) {
 			if (isCompleteCorrectSolution(currentSolution)) {
 				return Optional.ofNullable(currentSolution);
 			}
 			return Optional.empty();
 		}
-		int nextRow = (col == this.matriz.length - 1) ? (row + 1) % this.matriz.length : 0;
-	    int nextCol = (nextRow == 0) ? col + 1 : col;
+		
+		int nextCol = (col + 1) % this.matriz.length;
+		int nextRow = (col == this.matriz.length - 1) ? row + 1 : row;
+		//int nextRow = (col == this.matriz.length - 1) ? (row + 1) % this.matriz.length : 0;
+	    //int nextCol = (nextRow == 0) ? col + 1 : col;
 	    
 		for(int val = 1; val <= this.matriz.length; val++) {
-			currentSolution[col][row] = val;
+			currentSolution[row][col] = val;
 			
 			if (!this.isParcialCorrectSolution(currentSolution)) {
 				continue;

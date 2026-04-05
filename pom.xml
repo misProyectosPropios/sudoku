@@ -12,6 +12,12 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Set Java source/target version -->
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <!-- JavaFX version and platform (win for Windows). Adjust if you run on a different OS -->
+    <javafx.version>20</javafx.version>
+    <javafx.platform>win</javafx.platform>
   </properties>
 
   <dependencies>
@@ -21,7 +27,13 @@
   <artifactId>junit-jupiter</artifactId>
   <version>5.10.0</version>
   <scope>test</scope>
+  
 </dependency>
+	<dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
   </dependencies>
   <build>
   <plugins>
@@ -31,5 +43,6 @@
       <version>3.2.5</version>
     </plugin>
   </plugins>
+  
 </build>
 </project>

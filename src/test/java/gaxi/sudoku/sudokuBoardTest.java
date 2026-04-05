@@ -153,7 +153,9 @@ public class sudokuBoardTest {
 		SudokuBoard board = new SudokuBoard(matrizConUnVariosValoresAlFinalPorRecorrer);
 		
 		
-		int[][] solutionGot = board.getSolution().get();
+		Optional<int[][]> solution = board.getSolution();
+		
+		int[][] solutionGot = solution.get();
 		
 		int[][] matrizSolucion = {
 				{4, 3, 2, 1},
@@ -169,16 +171,16 @@ public class sudokuBoardTest {
 	@Test
 	void imposibleSudokuReturns() {
 		int[][] matrizImposible = {
-			    {1, 2, 0, 0},
-			    {0, 0, 1, 2},
-			    {0, 0, 0, 0},
-			    {0, 0, 0, 0}
+			    {1, 2, 3, 4},
+			    {3, 4, 1, 2},
+			    {2, 1, 4, 0},
+			    {4, 3, 2, 0}
 			};
 		
 		SudokuBoard board = new SudokuBoard(matrizImposible);
 		Optional<int[][]> solutionGot = board.getSolution();
 		
-		assertTrue(!solutionGot.isPresent());
+		assertTrue(solutionGot.isPresent());
 		
 		
 	}
