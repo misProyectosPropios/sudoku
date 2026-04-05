@@ -1,7 +1,11 @@
 package gaxi.sudoku;
 
-import java.util.Optional;
 
+import java.util.Optional;
+import javafx.scene.control.Label;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,10 +17,16 @@ import javafx.stage.Stage;
 public class SudokuGUI extends Application {
 
 	TextField[][] cells = new TextField[9][9];
+	private int seconds = 0;
+	private Timeline timeline;
+	private Label timerLabel = new Label("00:00");
+	
 	SudokuBoard solver = new SudokuBoard(new int[9][9]);
 	
     @Override
     public void start(Stage stage) {
+    	setupTimer();
+    	startTimer();
     	BorderPane root = new BorderPane();    	
         GridPane gridPane = new GridPane();
 
@@ -50,6 +60,7 @@ public class SudokuGUI extends Application {
             }
         }
         root.setCenter(gridPane);
+        
         root.setRight(createRightPanel());
         root.setBottom(createBottomPanel());
         Scene scene = new Scene(root, 500, 500);
@@ -59,6 +70,32 @@ public class SudokuGUI extends Application {
         stage.show();
     }
 
+    private void setupTimer() {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            seconds++;
+            updateTimerLabel();
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+    }
+    
+    private void updateTimerLabel() {
+        int minutes = seconds / 60;
+        int secs = seconds % 60;
+        timerLabel.setText(String.format("%02d:%02d", minutes, secs));
+    }
+    
+    private void startTimer() {
+        if (timeline != null) timeline.play();
+    }
+
+    private void stopTimer() {
+        if (timeline != null) timeline.stop();
+    }
+
+    private void resetTimer() {
+        seconds = 0;
+        updateTimerLabel();
+    }
     
     private HBox createBottomPanel() {
         HBox bottomPanel = new HBox(5); // spacing
@@ -85,7 +122,7 @@ public class SudokuGUI extends Application {
 
     private VBox createRightPanel() {
         VBox rightPanel = new VBox(10); // spacing
-
+        
         rightPanel.setPrefWidth(120); // controls ~20% depending on window size
         rightPanel.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
 
@@ -121,7 +158,7 @@ public class SudokuGUI extends Application {
         btn2.setOnAction(event -> {
             writeMatrizOriginal();
         });
-        
+        rightPanel.getChildren().add(0, timerLabel);
         return rightPanel;
     }
 
